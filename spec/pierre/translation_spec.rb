@@ -17,6 +17,7 @@ module Pierre
           key: "welcome_message",
           text: "Hello World!",
           context: "A welcome message for users",
+          fallback: "Hello Wonderful World!",
         }
       }
 
@@ -53,7 +54,26 @@ module Pierre
       describe "#context" do
         it "initializes with context" do
           expect(translation.context).to eq "A welcome message for users"
-          binding.pry
+        end
+      end
+
+      describe "#fallback" do
+        it "initializes with a fallback" do
+          expect(translation.fallback).to eq "Hello Wonderful World!"
+        end
+
+        context "when text is nil" do
+          it "is used instead" do
+            attributes[:text] = nil
+            expect(translation.text).to eq "Hello Wonderful World!"
+          end
+        end
+
+        context "when text is empty" do
+          it "is used instead" do
+            attributes[:text] = ""
+            expect(translation.text).to eq "Hello Wonderful World!"
+          end
         end
       end
     end
