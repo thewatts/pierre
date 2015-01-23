@@ -1,4 +1,10 @@
 # Pierre
+A gem for adding Multi Language Management to your application
+
+### Named after Pierre-François Bouchard
+> [Pierre-François Bouchard was an officer in the French Army engineers who is most famous for discovering the Rosetta Stone](http://en.wikipedia.org/wiki/Pierre-Fran%C3%A7ois_Bouchard)
+
+![Mr. Bouchard](http://artinvestment.ru/content/download/news/20091016_jean_francois_champollion.jpg)
 
 TODO: Write a gem description
 
@@ -29,3 +35,4 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
