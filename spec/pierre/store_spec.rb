@@ -97,5 +97,15 @@ module Pierre
         expect(result).to be_nil
       end
     end
+
+    describe "#keys" do
+      it "returns the sorted keys for the given language" do
+        store.adapter.set("en:boom", "hello")
+        store.adapter.set("en:shaka", "world")
+        store.adapter.set("en:laka", "!!!")
+
+        expect(store.keys(:en)).to eq [:boom, :laka, :shaka]
+      end
+    end
   end
 end

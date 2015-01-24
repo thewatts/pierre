@@ -94,6 +94,17 @@ translation.context
 # NOTE: an identical object would be retrived via Pierre.get(:en, :welcome_message)
 ```
 
+### Getting all the keys for a Language, sorted alphabetically
+
+```ruby
+Pierre.set(:es, :hello, "Hola")
+Pierre.set(:es, :crazy, "loco")
+Pierre.set(:es, :goodbye, "Adios!")
+
+Pierre.keys(:es)
+# => [:crazy, :goodbye, :hello]
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/pierre/fork )

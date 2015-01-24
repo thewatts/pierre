@@ -33,6 +33,12 @@ module Pierre
       end
     end
 
+    def keys(lang)
+      adapter.keys("#{ lang }:*").map do |raw_key|
+        raw_key.sub("#{ lang }:", "").to_sym
+      end.sort
+    end
+
     def set(lang, key, text, options)
       lookup_key = "#{ lang }:#{ key }"
       data = {

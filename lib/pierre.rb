@@ -18,6 +18,10 @@ module Pierre
     store.get(lang, key)
   end
 
+  def self.keys(lang)
+    store.keys(lang)
+  end
+
   def self.set(lang, key, text, options = {})
     store.set(lang, key, text, options)
   end

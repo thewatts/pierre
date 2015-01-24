@@ -1,4 +1,5 @@
 require "spec_helper"
+require "./lib/pierre/store"
 
 describe Pierre do
   describe "::VERSION" do
@@ -15,7 +16,7 @@ describe Pierre do
     end
 
     describe ".set" do
-      it "returns a Translation with the correct values" do
+      it "tells the store to add a translation" do
         options = { context: "A welcome message for the masses." }
         expect(store).to receive(:set).with(
           :en, :welcome_message, "Hello World", options
@@ -26,9 +27,16 @@ describe Pierre do
     end
 
     describe ".get" do
-      it "returns a Translation with the correct values" do
+      it "asks the store for a translation" do
         expect(store).to receive(:get).with(:en, :welcome_message)
         Pierre.get(:en, :welcome_message)
+      end
+    end
+
+    describe ".keys" do
+      it "asks the store for the keys for a language" do
+        expect(store).to receive(:keys).with(:en)
+        Pierre.keys(:en)
       end
     end
   end
