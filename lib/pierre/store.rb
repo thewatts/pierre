@@ -2,6 +2,7 @@ require "json"
 require "redis"
 require "redis-namespace"
 require "uri"
+require "./lib/pierre/translation"
 
 module Pierre
   class Store

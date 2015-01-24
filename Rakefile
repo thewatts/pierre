@@ -6,5 +6,5 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 task :console do
-  exec "pry -r canaveral -I ./lib"
+  exec "pry -r pierre -I ./lib"
 end

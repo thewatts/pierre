@@ -1,4 +1,5 @@
 require "spec_helper"
+require "./lib/pierre/store"
 
 module Pierre
   describe Store do
