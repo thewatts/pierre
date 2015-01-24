@@ -20,6 +20,10 @@ module Pierre
       @adapter ||= build_adapter
     end
 
+    def dump(lang)
+      dump_data_for(lang)
+    end
+
     def get(input_lang, key)
       data, output_lang = fetch_data(input_lang, key)
 
@@ -35,11 +39,11 @@ module Pierre
 
     def keys(lang)
       adapter.keys("#{ lang }:*").map do |raw_key|
-        raw_key.sub("#{ lang }:", "").to_sym
+        convert_raw_key(raw_key, lang)
       end.sort
     end
 
-    def set(lang, key, text, options)
+    def set(lang, key, text, options = {})
       lookup_key = "#{ lang }:#{ key }"
       data = {
         text: text,
@@ -65,8 +69,22 @@ module Pierre
       ).tap { |redis| redis.select(db) }
     end
 
+    def convert_raw_key(key, lang)
+      key.sub("#{ lang }:", "").to_sym
+    end
+
     def default_fallback_lang
       :en
+    end
+
+    def dump_data_for(lang)
+      keys = adapter.keys("#{ lang }:*")
+
+      keys.each_with_object({}) do |raw_key, hash|
+        converted_key = convert_raw_key(raw_key, lang)
+        hash[converted_key] = get(lang, converted_key)
+        hash
+      end
     end
 
     def fetch_data(lang, key)

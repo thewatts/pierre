@@ -100,11 +100,24 @@ module Pierre
 
     describe "#keys" do
       it "returns the sorted keys for the given language" do
-        store.adapter.set("en:boom", "hello")
-        store.adapter.set("en:shaka", "world")
-        store.adapter.set("en:laka", "!!!")
+        store.set(:en, :boom,  "hello")
+        store.set(:en, :shaka, "world")
+        store.set(:en, :laka,  "!!!")
 
         expect(store.keys(:en)).to eq [:boom, :laka, :shaka]
+      end
+    end
+
+    describe "#dump" do
+      it "returns the data (keys, translations) for the given language" do
+        store.set(:en, :boom,  "hello")
+        store.set(:en, :shaka, "world")
+        store.set(:en, :laka,  "!!!")
+
+        dump = store.dump(:en)
+
+        expect(dump.keys).to eq [:boom, :laka, :shaka]
+        expect(dump.values.map(&:text)).to eq ["hello", "!!!", "world"]
       end
     end
   end

@@ -105,6 +105,21 @@ Pierre.keys(:es)
 # => [:crazy, :goodbye, :hello]
 ```
 
+### Getting a dump of all the translations for a Language
+
+```ruby
+Pierre.set(:en, :boom,  "hello")
+Pierre.set(:en, :shaka, "world")
+Pierre.set(:en, :laka,  "!!!")
+
+Pierre.dump(:en)
+# => {
+#        :boom  => <Pierre::Translation... @text="hello">,
+#        :laka  => <Pierre::Translation... @text="!!!">,
+#        :shaka => <Pierre::Translation... @text="world">
+#    }
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/pierre/fork )
