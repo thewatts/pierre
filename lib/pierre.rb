@@ -15,6 +15,10 @@ module Pierre
     yield(configuration)
   end
 
+  def self.dump(lang)
+    store.dump(lang)
+  end
+
   def self.get(lang, key, options = { fallback: true })
     store.get(lang, key, options)
   end

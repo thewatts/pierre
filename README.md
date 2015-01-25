@@ -58,12 +58,15 @@ Pierre.set(language, key, text, options)
 # => <Pierre::Translation ... >
 ```
 
-- `language`: the language you are adding this translation for, example: `:en` or `:fr`
-    - Ultimately, it could be anything, so long as it's a symbol
-- `key`: this is the key to identify the piece of translated text, also a symbol. Example: `:welcome_message`
-- `text`: the text associated with the translation, ex: "Hello World" for `:en`, or "Hola Mundo" for `:es`, etc
+- `language`: the language you are adding this translation for.
+    - Ex: `:en` or `:fr`
+    - Ultimately, it could be anything, so long as it's a symbol.
+- `key`: this is the key to identify the piece of translated text, also a symbol.
+    - Ex: `:welcome_message`
+- `text`: the text associated with the translation.
+    - Ex: "Hello World" for `:en`, or "Hola Mundo" for `:es`, etc
 - `options`: These are optional, and currently - only `context` is supported.
-    - Example: ```options = { context: "A welcome message for the masses!" }```
+    - Ex: `options = { context: "A welcome message for the masses!" }`
 
 ### Retrieving a Translation
 
@@ -117,7 +120,6 @@ By default, the fallback language is searched if a language doesn't have a trans
 Example:
 ```ruby
 Pierre.set(:en, :welcome, "Hello!")
-
 translation = Pierre.get(:fr, :welcome)
 
 translation.lang
@@ -133,7 +135,6 @@ However, the fallback language search can be disabled by passing `{ fallback: fa
 Example:
 ```ruby
 Pierre.set(:en, :welcome, "Hello!")
-
 translation = Pierre.get(:fr, :welcome, { fallback: false })
 
 translation.lang
@@ -200,6 +201,97 @@ Pierre.manage(:es, reference: :en) # This defaults to :en, so Pierre.manage(:es)
 #         :es => <Pierre::Translation... @text=nil> # calling `#text` on this will return "Missing Translation"
 #       },
 #    }
+```
+
+### JSON of Data
+
+In the event of needing a JSON representation of the returned data, you should be able to call `#to_json` on all of it.
+
+Specifically (examples included):
+
+#### Instances of `Pierre::Translation`
+> Example: `Pierre.get(:en, :welcome).to_json`
+
+```json
+// for a found Translation
+{
+  "lang": "en",
+  "key": "welcome",
+  "text": "Hello!",
+  "context": "a welcome message",
+  "missing": false
+}
+
+// for a missing Translation
+{
+  "lang": "es",
+  "key": "welcome",
+  "text": "Missing Translation",
+  "context": null,
+  "missing": true
+}
+```
+
+#### The result of `Pierre.dump`
+> Example: `Pierre.dump(:en).to_json`
+
+```json
+{
+  "goodbye": {
+    "lang": "en",
+    "key": "goodbye",
+    "text": "Bye Now!",
+    "context": "a fairwell message",
+    "missing": false
+  },
+  "welcome": {
+    "lang": "en",
+    "key": "welcome",
+    "text": "Hello!",
+    "context": "a welcome message",
+    "missing": false
+  }
+}
+```
+
+#### The result of `Pierre.manage`
+> Example: `Pierre.manage(:es).to_json`
+
+```json
+{
+  "goodbye": {
+    "en": {
+      "key": "goodbye",
+      "lang": "en",
+      "text": "Bye Now!",
+      "context": "a goodbye note",
+      "missing": false
+    },
+    "es": {
+      "key": "goodbye",
+      "lang": "es",
+      "text": "Missing Translation",
+      "context": null,
+      "missing": true
+    }
+  },
+  "welcome": {
+    "en": {
+      "key": "welcome",
+      "lang": "en",
+      "text": "Hello!",
+      "context": "a welcome message",
+      "missing": false
+    },
+    "es": {
+      "key": "welcome",
+      "lang": "es",
+      "text": "Hola!",
+      "context": null,
+      "missing": false
+    }
+  }
+}
 ```
 
 ## Contributing
