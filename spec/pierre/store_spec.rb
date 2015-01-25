@@ -74,27 +74,42 @@ module Pierre
         result = store.get(lang, key)
 
         expect(result).to be_kind_of Pierre::Translation
-        expect(result.lang).to    eq lang
-        expect(result.key).to     eq key
-        expect(result.text).to    eq text
-        expect(result.context).to eq context
+        expect(result.missing?).to be false
+        expect(result.lang).to     eq lang
+        expect(result.key).to      eq key
+        expect(result.text).to     eq text
+        expect(result.context).to  eq context
       end
 
-      it "returns the translation for the fallback language if not set" do
-        french = :fr
-        result = store.get(french, key)
+      context "when missing a translation" do
+        context "when fallback is enabled (the default)" do
+          it "returns the translation for the fallback language if not set" do
+            french = :fr
+            result = store.get(french, key)
 
-        expect(result).to be_kind_of Pierre::Translation
-        expect(result.lang).to    eq :en
-        expect(result.key).to     eq key
-        expect(result.text).to    eq text
-        expect(result.context).to eq context
-      end
+            expect(result).to be_kind_of Pierre::Translation
+            expect(result.missing?).to be false
+            expect(result.lang).to     eq :en
+            expect(result.key).to      eq key
+            expect(result.text).to     eq text
+            expect(result.context).to  eq context
+          end
+        end
 
-      it "returns nil if there is no data for lang or fallback lang" do
-        store.adapter.flushdb # ensure no data is stored
-        result = store.get(:fr, key)
-        expect(result).to be_nil
+        context "when fallback is disabled (set to false)" do
+          it "returns a Translation object if there is no translation" do
+            store.adapter.flushdb # ensure no data is stored
+            store.set(lang, key, text)
+            result = store.get(:fr, key, fallback: false)
+
+            expect(result).to be_kind_of Pierre::Translation
+            expect(result.missing?).to be true
+            expect(result.lang).to     eq :fr
+            expect(result.key).to      eq key
+            expect(result.text).to     eq "Missing Translation"
+            expect(result.context).to  eq nil
+          end
+        end
       end
     end
 

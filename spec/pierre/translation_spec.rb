@@ -1,4 +1,5 @@
 require "spec_helper"
+require "./lib/pierre/translation"
 
 module Pierre
   describe Translation do
@@ -17,7 +18,7 @@ module Pierre
           key: "welcome_message",
           text: "Hello World!",
           context: "A welcome message for users",
-          fallback: "Hello Wonderful World!",
+          fallback_text: "Hello Wonderful World!",
         }
       }
 
@@ -57,9 +58,14 @@ module Pierre
         end
       end
 
-      describe "#fallback" do
-        it "initializes with a fallback" do
-          expect(translation.fallback).to eq "Hello Wonderful World!"
+      describe "#fallback_text" do
+        it "initializes with a fallback_text" do
+          expect(translation.fallback_text).to eq "Hello Wonderful World!"
+        end
+
+        it "defaults to 'Missing Translation'" do
+          attributes[:fallback_text] = nil
+          expect(translation.fallback_text).to eq "Missing Translation"
         end
 
         context "when text is nil" do
@@ -73,6 +79,22 @@ module Pierre
           it "is used instead" do
             attributes[:text] = ""
             expect(translation.text).to eq "Hello Wonderful World!"
+          end
+        end
+      end
+
+      describe "#missing?" do
+        context "when text is missing" do
+          it "is true" do
+            attributes[:text] = nil
+            expect(translation.missing?).to be true
+          end
+        end
+
+        context "when text is present" do
+          it "is false" do
+            attributes[:text] = "BOOM"
+            expect(translation.missing?).to be false
           end
         end
       end

@@ -2,15 +2,15 @@ module Pierre
   class Translation
     attr_reader   :attributes
     attr_writer   :key, :lang, :text
-    attr_accessor :context, :fallback
+    attr_accessor :context, :fallback_text
 
     def initialize(attributes = {})
-      @attributes = attributes
-      @lang       = attributes[:lang]
-      @key        = attributes[:key]
-      @text       = attributes[:text]
-      @context    = attributes[:context]
-      @fallback   = attributes[:fallback]
+      @attributes    = attributes
+      @lang          = attributes[:lang]
+      @key           = attributes[:key]
+      @text          = attributes[:text]
+      @context       = attributes[:context]
+      @fallback_text = attributes[:fallback_text] || "Missing Translation"
     end
 
     def key
@@ -21,12 +21,25 @@ module Pierre
       symbol_for(@lang)
     end
 
+    def missing?
+      text == fallback_text
+    end
+
     def text
       unless @text.nil? || @text.empty?
         @text
       else
-        fallback
+        fallback_text
       end
+    end
+
+    def to_json(options = {})
+      {
+        key: key,
+        lang: lang,
+        text: text,
+        context: context,
+      }.to_json
     end
 
     private

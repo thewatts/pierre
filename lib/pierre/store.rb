@@ -24,17 +24,15 @@ module Pierre
       dump_data_for(lang)
     end
 
-    def get(input_lang, key)
-      data, output_lang = fetch_data(input_lang, key)
+    def get(input_lang, key, options = { fallback: true })
+      data, output_lang = fetch_data(input_lang, key, options[:fallback])
 
-      unless data.nil? || data.empty?
-        Translation.new({
-          lang: output_lang,
-          key: key,
-          text: data[:text],
-          context: data[:context]
-        })
-      end
+      Translation.new({
+        lang: output_lang,
+        key: key,
+        text: data[:text],
+        context: data[:context]
+      })
     end
 
     def keys(lang)
@@ -87,13 +85,15 @@ module Pierre
       end
     end
 
-    def fetch_data(lang, key)
+    def fetch_data(lang, key, fallback = true)
       lookup_key = "#{ lang }:#{ key }"
       data = adapter.get(lookup_key)
 
       if data.nil? || data.empty?
-        unless lang == fallback_lang
-          fetch_data(fallback_lang, key)
+        unless lang == fallback_lang || !fallback
+          fetch_data(fallback_lang, key, fallback)
+        else
+          parse_data_and_lang(data, lang)
         end
       else
         parse_data_and_lang(data, lang)
@@ -101,6 +101,7 @@ module Pierre
     end
 
     def parse_data_and_lang(raw_data, lang)
+      raw_data ||= "{}"
       [ JSON.parse(raw_data, symbolize_names: true), lang ]
     end
 

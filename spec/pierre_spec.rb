@@ -28,7 +28,8 @@ describe Pierre do
 
     describe ".get" do
       it "asks the store for a translation" do
-        expect(store).to receive(:get).with(:en, :welcome_message)
+        options = { fallback: true }
+        expect(store).to receive(:get).with(:en, :welcome_message, options)
         Pierre.get(:en, :welcome_message)
       end
     end

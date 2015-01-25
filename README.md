@@ -94,6 +94,60 @@ translation.context
 # NOTE: an identical object would be retrived via Pierre.get(:en, :welcome_message)
 ```
 
+When a translation is missing, a `Pierre::Translation` is still returned - but its main attributes are slightly different.
+
+```ruby
+translation = Pierre.get(:en, :missing_message_example)
+
+translation.lang
+# => :en
+translation.key
+# => :missing_message_example
+translation.text
+# => "Missing Translation"
+translation.context
+# => nil
+translation.missing?
+# => true
+```
+
+This means that `Pierre.get` will never return `nil`, so that `Pierre.get(lang, key).text` will always return a value.
+
+### Using a Fallback
+By default, the fallback language is searched if a language doesn't have a translation.
+
+Example:
+```ruby
+Pierre.set(:en, :welcome, "Hello!")
+
+translation = Pierre.get(:fr, :welcome)
+
+translation.lang
+# => :en
+translation.key
+# => :welcome
+translation.text
+# => "Hello!"
+```
+
+However, the fallback language search can be disabled by passing `{ fallback: false }` into the search as options.
+
+Example:
+```ruby
+Pierre.set(:en, :welcome, "Hello!")
+
+translation = Pierre.get(:fr, :welcome, { fallback: false })
+
+translation.lang
+# => :fr
+translation.key
+# => :welcome
+translation.text
+# => "Missing Translation"
+translation.missing?
+# => true
+```
+
 ### Getting all the keys for a Language, sorted alphabetically
 
 ```ruby
