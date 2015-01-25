@@ -4,9 +4,7 @@ A gem for adding Multi Language Management to your application
 ### Named after Pierre-François Bouchard
 > [Pierre-François Bouchard was an officer in the French Army engineers who is most famous for discovering the Rosetta Stone](http://en.wikipedia.org/wiki/Pierre-Fran%C3%A7ois_Bouchard)
 
-![Mr. Bouchard](http://artinvestment.ru/content/download/news/20091016_jean_francois_champollion.jpg)
-
-TODO: Write a gem description
+![Mr. Bouchard](http://historienet.dk/files/bonnier-his/imagecache/630x420/pictures/pierre_francois_bouchard1.jpg)
 
 ## Installation
 
