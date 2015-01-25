@@ -41,6 +41,18 @@ module Pierre
       end.sort
     end
 
+    def manage(managing_lang, options = {})
+      reference_lang = options[:reference] || :en
+      reference_keys = keys(reference_lang)
+
+      reference_keys.each_with_object({}) do |key, hash|
+        hash[key] = {
+          reference_lang => get(reference_lang, key),
+          managing_lang  => get(managing_lang, key, fallback: false)
+        }
+      end
+    end
+
     def set(lang, key, text, options = {})
       lookup_key = "#{ lang }:#{ key }"
       data = {
@@ -81,7 +93,6 @@ module Pierre
       keys.each_with_object({}) do |raw_key, hash|
         converted_key = convert_raw_key(raw_key, lang)
         hash[converted_key] = get(lang, converted_key)
-        hash
       end
     end
 

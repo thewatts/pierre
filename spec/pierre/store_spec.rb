@@ -135,5 +135,26 @@ module Pierre
         expect(dump.values.map(&:text)).to eq ["hello", "!!!", "world"]
       end
     end
+
+    describe "#manage" do
+      it "returns the state of the given language, in comparison to the reference language" do
+        store.set(:en, :boom,  "hello")
+        store.set(:en, :shaka, "world")
+
+        store.set(:es, :boom, "hola")
+
+        data = store.manage(:es, reference: :en) # :en is the default
+
+        expect(data.keys).to eq [:boom, :shaka]
+
+        expect(data[:boom].keys).to eq [:en, :es]
+        expect(data[:boom].values.map(&:text)).to eq ["hello", "hola"]
+        expect(data[:boom].values.map(&:missing?)).to eq [false, false]
+
+        expect(data[:shaka].keys).to eq [:en, :es]
+        expect(data[:shaka].values.map(&:text)).to eq ["world", "Missing Translation"]
+        expect(data[:shaka].values.map(&:missing?)).to eq [false, true]
+      end
+    end
   end
 end

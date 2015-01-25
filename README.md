@@ -159,7 +159,7 @@ Pierre.keys(:es)
 # => [:crazy, :goodbye, :hello]
 ```
 
-### Getting a dump of all the translations for a Language
+### Getting a dump of all the Translations for a Language
 
 ```ruby
 Pierre.set(:en, :boom,  "hello")
@@ -171,6 +171,36 @@ Pierre.dump(:en)
 #        :boom  => <Pierre::Translation... @text="hello">,
 #        :laka  => <Pierre::Translation... @text="!!!">,
 #        :shaka => <Pierre::Translation... @text="world">
+#    }
+```
+
+### Managing a Language
+
+There may be times where you want to check and see what translations are missing in correlation to a reference language.
+For example, you may have all the translations done for English, and you are wanting to manage the Spanish equivalents.
+
+You can just pass in the language that you want to manage, and then the reference language.
+( The reference language defaults to `:en` )
+
+```ruby
+# English
+Pierre.set(:en, :boom,  "hello")
+Pierre.set(:en, :shaka, "world")
+
+# Spanish
+Pierre.set(:es, :boom,  "hola")
+
+# Getting the data back
+Pierre.manage(:es, reference: :en) # This defaults to :en, so Pierre.manage(:es) would work the same in this case
+# => {
+#       :boom => {
+#         :en => <Pierre::Translation... @text="hello">,
+#         :es => <Pierre::Translation... @text="hola">
+#       },
+#       :shaka => {
+#         :en => <Pierre::Translation... @text="world">,
+#         :es => <Pierre::Translation... @text=nil> # calling `#text` on this will return "Missing Translation"
+#       },
 #    }
 ```
 

@@ -1,4 +1,5 @@
 require "pierre/configuration"
+require "pierre/store"
 require "pierre/version"
 
 module Pierre
@@ -20,6 +21,11 @@ module Pierre
 
   def self.keys(lang)
     store.keys(lang)
+  end
+
+  def self.manage(lang, options = {})
+    options[:reference] ||= :en
+    store.manage(lang, options)
   end
 
   def self.set(lang, key, text, options = {})

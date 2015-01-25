@@ -40,5 +40,13 @@ describe Pierre do
         Pierre.keys(:en)
       end
     end
+
+    describe ".manage" do
+      it "delegates to the store" do
+        options = { reference: :en }
+        expect(store).to receive(:manage).with(:es, options)
+        Pierre.manage(:es)
+      end
+    end
   end
 end

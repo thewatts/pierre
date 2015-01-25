@@ -39,6 +39,7 @@ module Pierre
         lang: lang,
         text: text,
         context: context,
+        missing: missing?,
       }.to_json
     end
 
