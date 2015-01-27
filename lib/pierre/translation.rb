@@ -2,7 +2,7 @@ module Pierre
   class Translation
     attr_reader   :attributes
     attr_writer   :key, :lang, :text
-    attr_accessor :context, :fallback_text
+    attr_accessor :context, :fallback, :fallback_text
 
     def initialize(attributes = {})
       @attributes    = attributes
@@ -10,7 +10,12 @@ module Pierre
       @key           = attributes[:key]
       @text          = attributes[:text]
       @context       = attributes[:context]
+      @fallback      = attributes[:fallback] || false
       @fallback_text = attributes[:fallback_text] || "Missing Translation"
+    end
+
+    def fallback?
+      fallback == true
     end
 
     def key

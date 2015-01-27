@@ -74,11 +74,12 @@ module Pierre
         result = store.get(lang, key)
 
         expect(result).to be_kind_of Pierre::Translation
-        expect(result.missing?).to be false
-        expect(result.lang).to     eq lang
-        expect(result.key).to      eq key
-        expect(result.text).to     eq text
-        expect(result.context).to  eq context
+        expect(result.missing?).to  be false
+        expect(result.fallback?).to be false
+        expect(result.lang).to      eq lang
+        expect(result.key).to       eq key
+        expect(result.text).to      eq text
+        expect(result.context).to   eq context
       end
 
       context "when missing a translation" do
@@ -88,11 +89,12 @@ module Pierre
             result = store.get(french, key)
 
             expect(result).to be_kind_of Pierre::Translation
-            expect(result.missing?).to be false
-            expect(result.lang).to     eq :en
-            expect(result.key).to      eq key
-            expect(result.text).to     eq text
-            expect(result.context).to  eq context
+            expect(result.missing?).to  be false
+            expect(result.fallback?).to be true
+            expect(result.lang).to      eq :en
+            expect(result.key).to       eq key
+            expect(result.text).to      eq text
+            expect(result.context).to   eq context
           end
         end
 
@@ -103,11 +105,12 @@ module Pierre
             result = store.get(:fr, key, fallback: false)
 
             expect(result).to be_kind_of Pierre::Translation
-            expect(result.missing?).to be true
-            expect(result.lang).to     eq :fr
-            expect(result.key).to      eq key
-            expect(result.text).to     eq "Missing Translation"
-            expect(result.context).to  eq nil
+            expect(result.missing?).to  be true
+            expect(result.fallback?).to be false
+            expect(result.lang).to      eq :fr
+            expect(result.key).to       eq key
+            expect(result.text).to      eq "Missing Translation"
+            expect(result.context).to   eq nil
           end
         end
       end
