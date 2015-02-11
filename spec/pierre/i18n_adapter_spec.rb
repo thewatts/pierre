@@ -16,8 +16,8 @@ module Pierre
         store.set(:en, :hello, "World")
       end
 
-      it "gets the translation for the key from the store" do
-        expect(adapter["en.hello"]).to eq "World"
+      it "gets the translation for the key from the store (as json)" do
+        expect(adapter["en.hello"]).to eq "World".to_json
       end
     end
 

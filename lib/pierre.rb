@@ -24,6 +24,10 @@ module Pierre
     store.get(lang, key, options)
   end
 
+  def self.i18n_adapter
+    @i18n_adapter ||= Pierre::I18nAdapter.new(store)
+  end
+
   def self.keys(lang)
     store.keys(lang)
   end

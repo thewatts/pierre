@@ -24,4 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry", "~> 0.10"
   spec.add_development_dependency "redis", "~> 3.2.0"
   spec.add_development_dependency "redis-namespace", "~> 1.5.1"
+  spec.add_development_dependency "i18n", "~> 0.7.0"
+  spec.add_development_dependency "simplecov", "~> 0.9.1"
 end

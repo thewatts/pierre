@@ -109,6 +109,20 @@ module Pierre
           expect(translation.fallback?).to be false
         end
       end
+
+      describe "#to_json" do
+        it "creates a jsonified version of the Translation" do
+          expected = {
+            key: attributes[:key],
+            lang: attributes[:lang],
+            text: attributes[:text],
+            context: attributes[:context],
+            missing: translation.missing?
+          }.to_json
+
+          expect(translation.to_json).to eq expected
+        end
+      end
     end
   end
 end
