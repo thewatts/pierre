@@ -4,18 +4,22 @@ $:.unshift "./lib"
 
 require 'pry'
 require 'pierre'
+require 'i18n'
 
-redis_uri  = "redis://127.0.0.1:6379"
-db_index   = 1
-namespace  = :pierre_console_testing
-test_store = Pierre::Store.new({
-  uri: redis_uri,        # the URI of the Redis service being used
-  db:  db_index,         # the index of the database in Redis
-  namespace: namespace,  # the namepace desired for the Redis database
+@redis_uri  = "redis://127.0.0.1:6379"
+@db_index   = 1
+@namespace  = :pierre_console_testing
+@test_store = Pierre::Store.new({
+  uri: @redis_uri,        # the URI of the Redis service being used
+  db:  @db_index,         # the index of the database in Redis
+  namespace: @namespace,  # the namepace desired for the Redis database
 })
 
 Pierre.configure do |config|
-  config.store = test_store
+  config.store = @test_store
 end
+
+I18n.backend = I18n::Backend::KeyValue.new(Pierre.i18n_adapter)
+I18n.config.enforce_available_locales = false
 
 Pry.start
