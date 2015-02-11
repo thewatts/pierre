@@ -9,6 +9,7 @@ module Pierre
     def [](raw_key)
       lang, key = parse_raw_key(raw_key)
       translation = store.get(lang, key)
+
       unless translation.missing?
         translation.text.to_json
       end
@@ -27,8 +28,8 @@ module Pierre
 
     def parse_raw_key(raw_key)
       keys = raw_key.split(".")
-      lang = keys.first
-      key  = keys.last
+      lang = keys.shift
+      key  = keys.join(".")
 
       [ lang, key ]
     end

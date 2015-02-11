@@ -14,10 +14,15 @@ module Pierre
       before do
         store.flushdb
         store.set(:en, :hello, "World")
+        store.set(:en, "hiya.there", "Howdy")
       end
 
       it "gets the translation for the key from the store (as json)" do
         expect(adapter["en.hello"]).to eq "World".to_json
+      end
+
+      it "gets the translation for a complex key from the store (as json)" do
+        expect(adapter["en.hiya.there"]).to eq "Howdy".to_json
       end
     end
 
