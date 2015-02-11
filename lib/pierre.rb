@@ -1,6 +1,7 @@
-require "pierre/configuration"
-require "pierre/store"
 require "pierre/version"
+require "pierre/configuration"
+require "pierre/i18n_adapter"
+require "pierre/store"
 
 module Pierre
   class << self

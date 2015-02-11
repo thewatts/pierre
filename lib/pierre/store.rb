@@ -24,6 +24,10 @@ module Pierre
       dump_data_for(lang)
     end
 
+    def flushdb
+      adapter.flushdb
+    end
+
     def get(input_lang, key, options = { fallback: true })
       data, output_lang = fetch_data(input_lang, key, options[:fallback])
 
@@ -37,9 +41,13 @@ module Pierre
     end
 
     def keys(lang)
-      adapter.keys("#{ lang }:*").map do |raw_key|
+      adapter.keys("#{ lang }.*").map do |raw_key|
         convert_raw_key(raw_key, lang)
       end.sort
+    end
+
+    def raw_keys
+      adapter.keys
     end
 
     def manage(managing_lang, options = {})
@@ -55,13 +63,12 @@ module Pierre
     end
 
     def set(lang, key, text, options = {})
-      lookup_key = "#{ lang }:#{ key }"
       data = {
         text: text,
         context: options[:context],
       }.to_json
 
-      if adapter.set(lookup_key, data) == "OK"
+      if adapter.set(lookup_key(lang, key), data) == "OK"
         get(lang, key)
       end
     end
@@ -81,7 +88,7 @@ module Pierre
     end
 
     def convert_raw_key(key, lang)
-      key.sub("#{ lang }:", "").to_sym
+      key.sub("#{ lang }.", "").to_sym
     end
 
     def default_fallback_lang
@@ -95,8 +102,7 @@ module Pierre
     end
 
     def fetch_data(lang, key, fallback = true)
-      lookup_key = "#{ lang }:#{ key }"
-      data = adapter.get(lookup_key)
+      data = adapter.get(lookup_key(lang, key))
 
       if data.nil? || data.empty?
         unless lang == fallback_lang || !fallback
@@ -116,6 +122,10 @@ module Pierre
 
     def parsed_uri
       URI.parse(uri)
+    end
+
+    def lookup_key(lang, key)
+      "#{ lang }.#{ key }"
     end
   end
 end

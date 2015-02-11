@@ -1,0 +1,21 @@
+#! /usr/bin/env ruby
+
+$:.unshift "./lib"
+
+require 'pry'
+require 'pierre'
+
+redis_uri  = "redis://127.0.0.1:6379"
+db_index   = 1
+namespace  = :pierre_console_testing
+test_store = Pierre::Store.new({
+  uri: redis_uri,        # the URI of the Redis service being used
+  db:  db_index,         # the index of the database in Redis
+  namespace: namespace,  # the namepace desired for the Redis database
+})
+
+Pierre.configure do |config|
+  config.store = test_store
+end
+
+Pry.start
