@@ -31,7 +31,8 @@ module Pierre
         lang: output_lang,
         key: key,
         text: data[:text],
-        context: data[:context]
+        context: data[:context],
+        fallback: input_lang != output_lang,
       })
     end
 
@@ -88,11 +89,8 @@ module Pierre
     end
 
     def dump_data_for(lang)
-      keys = adapter.keys("#{ lang }:*")
-
-      keys.each_with_object({}) do |raw_key, hash|
-        converted_key = convert_raw_key(raw_key, lang)
-        hash[converted_key] = get(lang, converted_key)
+      keys(lang).each_with_object({}) do |key, hash|
+        hash[key] = get(lang, key)
       end
     end
 

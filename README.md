@@ -116,6 +116,7 @@ This means that `Pierre.get` will never return `nil`, so that `Pierre.get(lang, 
 
 ### Using a Fallback
 By default, the fallback language is searched if a language doesn't have a translation.
+Also note that calling `fallback?` on the translation will return `true` in this case.
 
 Example:
 ```ruby
@@ -128,6 +129,8 @@ translation.key
 # => :welcome
 translation.text
 # => "Hello!"
+translation.fallback?
+# => true
 ```
 
 However, the fallback language search can be disabled by passing `{ fallback: false }` into the search as options.

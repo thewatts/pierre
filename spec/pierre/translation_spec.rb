@@ -98,6 +98,17 @@ module Pierre
           end
         end
       end
+
+      describe "#fallback?" do
+        it "is true if set to true" do
+          attributes[:fallback] = true
+          expect(translation.fallback?).to be true
+        end
+
+        it "is false by default" do
+          expect(translation.fallback?).to be false
+        end
+      end
     end
   end
 end
