@@ -44,6 +44,14 @@ module Pierre
           attributes[:key] = nil
           expect(translation.key).to eq nil
         end
+
+        context "with a scoped key" do
+          it "correctly pulls out the scopes from the key" do
+            attributes[:key] = "down.more.levels.heading"
+            expect(translation.key).to   eq :heading
+            expect(translation.scope).to eq [:down, :more, :levels]
+          end
+        end
       end
 
       describe "#text" do

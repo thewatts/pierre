@@ -65,6 +65,18 @@ module Pierre
           expect(stored_data).to eq expected_data
         end
       end
+
+      context "with added scope via the initial key" do
+        it "sets the translation value in redis based on scope" do
+          key = "down.more.levels.welcome_message"
+          store.set(lang, key, text, options)
+
+          expected_data = { text: text, context: context }.to_json
+          stored_data = store.adapter.get("en.down.more.levels.welcome_message")
+
+          expect(stored_data).to eq expected_data
+        end
+      end
     end
 
     describe "#get" do

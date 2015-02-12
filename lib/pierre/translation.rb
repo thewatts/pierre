@@ -18,6 +18,14 @@ module Pierre
       @fallback      = attributes[:fallback] || false
       @scope         = parse_scope(attributes[:scope])
       @fallback_text = attributes[:fallback_text] || "Missing Translation"
+
+      after_initialize
+    end
+
+    def after_initialize
+      parsed_key, parsed_scopes = parse_key(key)
+      self.key   = parsed_key
+      self.scope = scope + parsed_scopes
     end
 
     def fallback?
@@ -55,6 +63,12 @@ module Pierre
     end
 
     private
+
+    def parse_key(raw_key)
+      keys  = raw_key.to_s.split(".").map(&:to_sym)
+      key   = keys.pop
+      [ key, keys ]
+    end
 
     def parse_scope(scope)
       case scope
