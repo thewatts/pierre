@@ -53,6 +53,18 @@ module Pierre
         expect(result.text).to    eq text
         expect(result.context).to eq context
       end
+
+      context "with added scope" do
+        it "sets the translation value in redis based on scope" do
+          options[:scope] = [ :down, :more, :levels ]
+          store.set(lang, key, text, options)
+
+          expected_data = { text: text, context: context }.to_json
+          stored_data = store.adapter.get("en.down.more.levels.welcome_message")
+
+          expect(stored_data).to eq expected_data
+        end
+      end
     end
 
     describe "#get" do

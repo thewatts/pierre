@@ -28,14 +28,17 @@ module Pierre
       adapter.flushdb
     end
 
-    def get(input_lang, key, options = { fallback: true })
-      data, output_lang = fetch_data(input_lang, key, options[:fallback])
+    def get(input_lang, key, options = {})
+      options[:fallback] = true unless options[:fallback] == false
+
+      data, output_lang  = fetch_data(input_lang, key, options)
 
       Translation.new({
         lang: output_lang,
         key: key,
         text: data[:text],
         context: data[:context],
+        scope: options[:scope],
         fallback: input_lang != output_lang,
       })
     end
@@ -68,8 +71,8 @@ module Pierre
         context: options[:context],
       }.to_json
 
-      if adapter.set(lookup_key(lang, key), data) == "OK"
-        get(lang, key)
+      if adapter.set(lookup_key(lang, key, options[:scope]), data) == "OK"
+        get(lang, key, options)
       end
     end
 
@@ -101,12 +104,15 @@ module Pierre
       end
     end
 
-    def fetch_data(lang, key, fallback = true)
-      data = adapter.get(lookup_key(lang, key))
+    def fetch_data(lang, key, options = {})
+      fallback = options[:fallback]
+      scope    = options[:scope]
+
+      data = adapter.get(lookup_key(lang, key, scope))
 
       if data.nil? || data.empty?
         unless lang == fallback_lang || !fallback
-          fetch_data(fallback_lang, key, fallback)
+          fetch_data(fallback_lang, key, { fallback: fallback, scope: scope })
         else
           parse_data_and_lang(data, lang)
         end
@@ -124,8 +130,22 @@ module Pierre
       URI.parse(uri)
     end
 
-    def lookup_key(lang, key)
-      "#{ lang }.#{ key }"
+    def lookup_key(lang, key, scope_array)
+      converted_scope_array = convert_scope_array(scope_array)
+      scoped_key = converted_scope_array.push(key).map(&:to_s).join(".")
+      "#{ lang }.#{ scoped_key }"
+    end
+
+    def convert_scope_array(scope_array)
+      case scope_array
+
+      when Array
+        scope_array
+      when nil
+        []
+      when String
+        [scope_array]
+      end
     end
   end
 end

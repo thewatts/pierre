@@ -1,8 +1,13 @@
 module Pierre
   class Translation
     attr_reader   :attributes
-    attr_writer   :key, :lang, :text
-    attr_accessor :context, :fallback, :fallback_text
+    attr_accessor :context,
+                  :fallback,
+                  :fallback_text,
+                  :key,
+                  :lang,
+                  :scope,
+                  :text
 
     def initialize(attributes = {})
       @attributes    = attributes
@@ -11,6 +16,7 @@ module Pierre
       @text          = attributes[:text]
       @context       = attributes[:context]
       @fallback      = attributes[:fallback] || false
+      @scope         = parse_scope(attributes[:scope])
       @fallback_text = attributes[:fallback_text] || "Missing Translation"
     end
 
@@ -53,6 +59,17 @@ module Pierre
     def symbol_for(value)
       if value
         value.to_sym
+      end
+    end
+
+    def parse_scope(scope)
+      case scope
+      when nil
+        []
+      when Array
+        scope
+      when String
+        scope.split('.').map(&:to_sym)
       end
     end
   end
