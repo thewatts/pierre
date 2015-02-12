@@ -56,12 +56,6 @@ module Pierre
 
     private
 
-    def symbol_for(value)
-      if value
-        value.to_sym
-      end
-    end
-
     def parse_scope(scope)
       case scope
       when nil
@@ -70,6 +64,12 @@ module Pierre
         scope
       when String
         scope.split('.').map(&:to_sym)
+      end
+    end
+
+    def symbol_for(value)
+      if value
+        value.to_sym
       end
     end
   end

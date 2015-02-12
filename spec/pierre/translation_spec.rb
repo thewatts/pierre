@@ -123,6 +123,23 @@ module Pierre
           expect(translation.to_json).to eq expected
         end
       end
+
+      describe "#scope" do
+        it "pulls the default scope it not initialized with one" do
+          attributes[:scope] = nil
+          expect(translation.scope).to eq []
+        end
+
+        it "pulls the scope if initialized with it" do
+          attributes[:scope] = [:hello, :world]
+          expect(translation.scope).to eq [:hello, :world]
+        end
+
+        it "converts the scope if it's a string" do
+          attributes[:scope] = "hello.world"
+          expect(translation.scope).to eq [:hello, :world]
+        end
+      end
     end
   end
 end

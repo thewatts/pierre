@@ -3,6 +3,7 @@ require "redis"
 require "redis-namespace"
 require "uri"
 require "./lib/pierre/translation"
+require "./lib/pierre/store/options_sanitizer"
 
 module Pierre
   class Store
@@ -29,8 +30,7 @@ module Pierre
     end
 
     def get(input_lang, key, options = {})
-      options[:fallback] = true unless options[:fallback] == false
-
+      options = sanitize(options)
       data, output_lang  = fetch_data(input_lang, key, options)
 
       Translation.new({
@@ -49,10 +49,6 @@ module Pierre
       end.sort
     end
 
-    def raw_keys
-      adapter.keys
-    end
-
     def manage(managing_lang, options = {})
       reference_lang = options[:reference] || :en
       reference_keys = keys(reference_lang)
@@ -65,13 +61,20 @@ module Pierre
       end
     end
 
+    def raw_keys
+      adapter.keys
+    end
+
     def set(lang, key, text, options = {})
+      options = sanitize(options)
+
+      lookup_key = build_key(lang, key, options[:scope])
       data = {
         text: text,
         context: options[:context],
       }.to_json
 
-      if adapter.set(lookup_key(lang, key, options[:scope]), data) == "OK"
+      if adapter.set(lookup_key, data) == "OK"
         get(lang, key, options)
       end
     end
@@ -80,6 +83,11 @@ module Pierre
 
     def build_adapter
       Redis::Namespace.new(namespace, redis: connection)
+    end
+
+    def build_key(lang, key, scope_array)
+      scoped_key = scope_array.dup.push(key).map(&:to_s).join(".")
+      "#{ lang }.#{ scoped_key }"
     end
 
     def connection
@@ -105,14 +113,13 @@ module Pierre
     end
 
     def fetch_data(lang, key, options = {})
-      fallback = options[:fallback]
-      scope    = options[:scope]
-
-      data = adapter.get(lookup_key(lang, key, scope))
+      options    = sanitize(options)
+      lookup_key = build_key(lang, key, options[:scope])
+      data       = adapter.get(lookup_key)
 
       if data.nil? || data.empty?
-        unless lang == fallback_lang || !fallback
-          fetch_data(fallback_lang, key, { fallback: fallback, scope: scope })
+        unless lang == fallback_lang || !options[:fallback]
+          fetch_data(fallback_lang, key, options)
         else
           parse_data_and_lang(data, lang)
         end
@@ -130,22 +137,8 @@ module Pierre
       URI.parse(uri)
     end
 
-    def lookup_key(lang, key, scope_array)
-      converted_scope_array = convert_scope_array(scope_array)
-      scoped_key = converted_scope_array.push(key).map(&:to_s).join(".")
-      "#{ lang }.#{ scoped_key }"
-    end
-
-    def convert_scope_array(scope_array)
-      case scope_array
-
-      when Array
-        scope_array
-      when nil
-        []
-      when String
-        [scope_array]
-      end
+    def sanitize(options = {})
+      OptionsSanitizer.sanitize(options)
     end
   end
 end
