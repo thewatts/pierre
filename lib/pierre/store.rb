@@ -2,8 +2,8 @@ require "json"
 require "redis"
 require "redis-namespace"
 require "uri"
-require "./lib/pierre/translation"
-require "./lib/pierre/store/options_sanitizer"
+require "pierre/translation"
+require "pierre/store/options_sanitizer"
 
 module Pierre
   class Store
