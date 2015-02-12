@@ -61,12 +61,12 @@ Pierre.set(language, key, text, options)
 - `language`: the language you are adding this translation for.
     - Ex: `:en` or `:fr`
     - Ultimately, it could be anything, so long as it's a symbol.
-- `key`: this is the key to identify the piece of translated text, also a symbol.
-    - Ex: `:welcome_message`
+- `key`: this is the key to identify the piece of translated text. This can be a symbol or a string.
+    - Ex: `:welcome_message` or `welcome_message`
 - `text`: the text associated with the translation.
     - Ex: "Hello World" for `:en`, or "Hola Mundo" for `:es`, etc
-- `options`: These are optional, and currently - only `context` is supported.
-    - Ex: `options = { context: "A welcome message for the masses!" }`
+- `options`: These are optional, and currently - only `context` and `scope` are supported.
+    - Ex: `options = { context: "A welcome message for the masses!", scope: [:homepage] }`
 
 ### Retrieving a Translation
 
@@ -91,6 +91,8 @@ translation.text
 # => "Hello World"
 translation.context
 # => "A welcome message for the masses!"
+translation.scope
+# => []
 
 # NOTE: an identical object would be retrived via Pierre.get(:en, :welcome_message)
 ```
@@ -148,6 +150,45 @@ translation.text
 # => "Missing Translation"
 translation.missing?
 # => true
+```
+
+### Scoping Translations
+
+There may be times where the key you want to use is only unique within a certain scope.
+Example: The Home Page/View of your application has a heading message, but so does the Contact Page/View.
+
+Instead of having to set unique names for your keys, like `home_view_heading_message` and `contact_view_welcome_message`, you can share keys by using scopes.
+
+Example:
+
+```ruby
+translation = Pierre.set(:en, :heading_message, "Welcome to our App!", scope: [:home_view])
+translation.key
+# => :heading_message
+translation.text
+# => "Welcome to our App!"
+translation.scope
+# => [:home_view]
+
+translation = Pierre.set(:en, :heading_message, "Give us a Call!", scope: [:contact_view])
+translation.key
+# => :heading_message
+translation.text
+# => "Give us a call!"
+translation.scope
+# => [:contact_view]
+```
+
+And since `Pierre` supports strings as keys, you can chain them to add scope if you'd prefer.
+
+```ruby
+translation = Pierre.set(:en, "home_view.heading_message", "Welcome to our App!")
+translation.key
+# => :heading_message
+translation.text
+# => "Welcome to our App!"
+translation.scope
+# => [:home_view]
 ```
 
 ### Getting all the keys for a Language, sorted alphabetically
@@ -295,6 +336,44 @@ Specifically (examples included):
     }
   }
 }
+```
+
+## I18n Support
+
+`[I18n](https://github.com/svenfuchs/i18n)` is a great project, and it comes baked right into `Rails`.
+
+In `Rails` you can simply and effectively pull translations into your views.
+
+Example:
+
+```erb
+# app/views/home/index.html.erb
+
+<h1><%= t("home_heading") %></h1>
+<h3><%= t("home_subtitle") %></h3>
+```
+
+`Pierre` provides a custom adapter to plug into `I18n` so that you can still use `I18n` in your `Rails` views, while still managing your translations through `Pierre`.
+
+```ruby
+# config/initializers/pierre.rb
+
+redis_uri     = "redis://127.0.0.1:6379"
+db_index      = 0
+namespace     = :my_project
+
+store = Pierre::Store.new({
+  uri: redis_uri,        # the URI of the Redis service being used
+  db:  db_index,         # the index of the database in Redis
+  namespace: namespace,  # the namepace desired for the Redis database
+})
+
+Pierre.configure do |config|
+  config.store = store
+end
+
+# assign the backend of I18n as Pierre's i18n_adapter
+I18n.backend = I18n::Backend::KeyValue.new(Pierre.i18n_adapter)
 ```
 
 ## Contributing
