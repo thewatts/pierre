@@ -1,6 +1,7 @@
-require "pierre/configuration"
-require "pierre/store"
 require "pierre/version"
+require "pierre/configuration"
+require "pierre/i18n_adapter"
+require "pierre/store"
 
 module Pierre
   class << self
@@ -21,6 +22,10 @@ module Pierre
 
   def self.get(lang, key, options = { fallback: true })
     store.get(lang, key, options)
+  end
+
+  def self.i18n_adapter
+    @i18n_adapter ||= Pierre::I18nAdapter.new(store)
   end
 
   def self.keys(lang)

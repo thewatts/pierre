@@ -28,9 +28,9 @@ module Pierre
     end
 
     describe "#set" do
-      let(:lang) { :en }
-      let(:key)  { :welcome_message }
-      let(:text) { "Hello World" }
+      let(:lang)    { :en }
+      let(:key)     { :welcome_message }
+      let(:text)    { "Hello World" }
       let(:context) { "A Welcome message to the masses." }
       let(:options) { { context: context } }
 
@@ -38,7 +38,7 @@ module Pierre
         store.set(lang, key, text, options)
 
         expected_data = { text: text, context: context }.to_json
-        lookup_key = "#{ lang }:#{ key }"
+        lookup_key = "#{ lang }.#{ key }"
 
         stored_data = store.adapter.get(lookup_key)
         expect(stored_data).to eq expected_data
@@ -53,6 +53,30 @@ module Pierre
         expect(result.text).to    eq text
         expect(result.context).to eq context
       end
+
+      context "with added scope" do
+        it "sets the translation value in redis based on scope" do
+          options[:scope] = [ :down, :more, :levels ]
+          store.set(lang, key, text, options)
+
+          expected_data = { text: text, context: context }.to_json
+          stored_data = store.adapter.get("en.down.more.levels.welcome_message")
+
+          expect(stored_data).to eq expected_data
+        end
+      end
+
+      context "with added scope via the initial key" do
+        it "sets the translation value in redis based on scope" do
+          key = "down.more.levels.welcome_message"
+          store.set(lang, key, text, options)
+
+          expected_data = { text: text, context: context }.to_json
+          stored_data = store.adapter.get("en.down.more.levels.welcome_message")
+
+          expect(stored_data).to eq expected_data
+        end
+      end
     end
 
     describe "#get" do
@@ -60,7 +84,7 @@ module Pierre
       let(:key)        { :welcome_message }
       let(:text)       { "Hello World" }
       let(:context)    { "A Welcome message to the masses." }
-      let(:lookup_key) { "#{ lang }:#{ key }" }
+      let(:lookup_key) { "#{ lang }.#{ key }" }
       let(:data) {
         {
           text: text,

@@ -44,6 +44,14 @@ module Pierre
           attributes[:key] = nil
           expect(translation.key).to eq nil
         end
+
+        context "with a scoped key" do
+          it "correctly pulls out the scopes from the key" do
+            attributes[:key] = "down.more.levels.heading"
+            expect(translation.key).to   eq :heading
+            expect(translation.scope).to eq [:down, :more, :levels]
+          end
+        end
       end
 
       describe "#text" do
@@ -107,6 +115,37 @@ module Pierre
 
         it "is false by default" do
           expect(translation.fallback?).to be false
+        end
+      end
+
+      describe "#to_json" do
+        it "creates a jsonified version of the Translation" do
+          expected = {
+            key: attributes[:key],
+            lang: attributes[:lang],
+            text: attributes[:text],
+            context: attributes[:context],
+            missing: translation.missing?
+          }.to_json
+
+          expect(translation.to_json).to eq expected
+        end
+      end
+
+      describe "#scope" do
+        it "pulls the default scope it not initialized with one" do
+          attributes[:scope] = nil
+          expect(translation.scope).to eq []
+        end
+
+        it "pulls the scope if initialized with it" do
+          attributes[:scope] = [:hello, :world]
+          expect(translation.scope).to eq [:hello, :world]
+        end
+
+        it "converts the scope if it's a string" do
+          attributes[:scope] = "hello.world"
+          expect(translation.scope).to eq [:hello, :world]
         end
       end
     end
