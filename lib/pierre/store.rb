@@ -108,7 +108,7 @@ module Pierre
 
     def dump_data_for(lang)
       keys(lang).each_with_object({}) do |key, hash|
-        hash[key] = get(lang, key)
+        hash[key] = get(lang, key).text
       end
     end
 

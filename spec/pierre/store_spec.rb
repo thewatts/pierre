@@ -159,7 +159,7 @@ module Pierre
         dump = store.dump(:en)
 
         expect(dump.keys).to eq [:boom, :laka, :shaka]
-        expect(dump.values.map(&:text)).to eq ["hello", "!!!", "world"]
+        expect(dump.values).to eq ["hello", "!!!", "world"]
       end
     end
 
