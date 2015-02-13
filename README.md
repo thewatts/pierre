@@ -211,9 +211,9 @@ Pierre.set(:en, :laka,  "!!!")
 
 Pierre.dump(:en)
 # => {
-#        :boom  => <Pierre::Translation... @text="hello">,
-#        :laka  => <Pierre::Translation... @text="!!!">,
-#        :shaka => <Pierre::Translation... @text="world">
+#        :boom  => "hello",
+#        :laka  => "!!!",
+#        :shaka => "world"
 #    }
 ```
 

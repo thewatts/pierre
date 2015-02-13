@@ -1,3 +1,5 @@
+require 'json'
+
 module Pierre
   class Translation
     attr_reader   :attributes
@@ -52,14 +54,18 @@ module Pierre
       end
     end
 
-    def to_json(options = {})
+    def as_json(options = {})
       {
         key: key,
         lang: lang,
         text: text,
         context: context,
         missing: missing?,
-      }.to_json
+      }
+    end
+
+    def to_json(options = {})
+      as_json(options).to_json
     end
 
     private
