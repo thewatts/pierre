@@ -40,6 +40,7 @@ module Pierre
         context: data[:context],
         scope: options[:scope],
         fallback: input_lang != output_lang,
+        fallback_text: options[:fallback_text]
       })
     end
 

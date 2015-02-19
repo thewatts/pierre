@@ -19,6 +19,10 @@ module Pierre
         end
       end
 
+      def fallback_text
+        options[:fallback_text]
+      end
+
       def scope
         case options[:scope]
         when String
@@ -33,6 +37,7 @@ module Pierre
       def to_hash
         {
           fallback: fallback,
+          fallback_text: fallback_text,
           scope: scope,
           context: context,
         }
