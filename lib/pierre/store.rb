@@ -50,6 +50,11 @@ module Pierre
       end.sort
     end
 
+    def languages
+      language_data = adapter.get(:languages) || "[]"
+      JSON.parse(language_data).map(&:to_sym)
+    end
+
     def manage(managing_lang, options = {})
       reference_lang = options[:reference] || :en
       reference_keys = keys(reference_lang)
@@ -69,6 +74,8 @@ module Pierre
     def set(lang, key, text, options = {})
       options = sanitize(options)
 
+      add_language_to_store(lang)
+
       lookup_key = build_key(lang, key, options[:scope])
       data = {
         text: text,
@@ -81,6 +88,13 @@ module Pierre
     end
 
     private
+
+    def add_language_to_store(lang)
+      unless lang.nil? || lang.empty? || languages.include?(lang.to_sym)
+        updated_languages = languages + [lang]
+        adapter.set(:languages, updated_languages.to_json)
+      end
+    end
 
     def build_adapter
       Redis::Namespace.new(namespace, redis: connection)

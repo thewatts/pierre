@@ -21,7 +21,7 @@ module Pierre
     end
 
     def keys
-      store.raw_keys.sort
+      store.raw_keys.sort - protected_keys
     end
 
     private
@@ -32,6 +32,10 @@ module Pierre
       key  = keys.join(".")
 
       [ lang, key ]
+    end
+
+    def protected_keys
+      [ "languages" ]
     end
   end
 end

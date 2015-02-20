@@ -27,6 +27,22 @@ module Pierre
       end
     end
 
+    describe "#languages" do
+      context "without anything stored" do
+        it "returns an empty array" do
+          expect(store.languages).to eq []
+        end
+      end
+
+      context "with a language stored" do
+        it "returnsn the languages stored" do
+          store.adapter.set(:languages, [:en, :es].to_json)
+          expect(store.languages).to eq [:en, :es]
+        end
+      end
+    end
+
+
     describe "#set" do
       let(:lang)    { :en }
       let(:key)     { :welcome_message }
@@ -42,6 +58,12 @@ module Pierre
 
         stored_data = store.adapter.get(lookup_key)
         expect(stored_data).to eq expected_data
+      end
+
+      it "adds a language to the store's languages" do
+        expect(store.languages).to be_empty
+        store.set(lang, key, text)
+        expect(store.languages).to include lang
       end
 
       it "returns a Translation instance after setting" do
