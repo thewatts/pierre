@@ -50,6 +50,11 @@ module Pierre
       end.sort
     end
 
+    def languages
+      language_data = adapter.get(:languages) || "[]"
+      JSON.parse(language_data).map(&:to_sym)
+    end
+
     def manage(managing_lang, options = {})
       reference_lang = options[:reference] || :en
       reference_keys = keys(reference_lang)
@@ -66,8 +71,18 @@ module Pierre
       adapter.keys
     end
 
+    def remove(key)
+      languages.each do |lang|
+        lookup_key = build_key(lang, key)
+        adapter.del(lookup_key)
+        remove_language_from_store_if_no_translations(lang)
+      end
+    end
+
     def set(lang, key, text, options = {})
       options = sanitize(options)
+
+      add_language_to_store_unless_present(lang)
 
       lookup_key = build_key(lang, key, options[:scope])
       data = {
@@ -82,11 +97,26 @@ module Pierre
 
     private
 
+    def add_language_to_store_unless_present(lang)
+      unless lang.nil? || lang.empty? || languages.include?(lang.to_sym)
+        updated_languages = languages + [lang]
+        adapter.set(:languages, updated_languages.to_json)
+      end
+    end
+
+    def remove_language_from_store_if_no_translations(lang)
+      translated_keys = adapter.keys("#{ lang }*")
+      if translated_keys.empty?
+        updated_languages = languages - [lang]
+        adapter.set(:languages, updated_languages.to_json)
+      end
+    end
+
     def build_adapter
       Redis::Namespace.new(namespace, redis: connection)
     end
 
-    def build_key(lang, key, scope_array)
+    def build_key(lang, key, scope_array = [])
       scoped_key = scope_array.dup.push(key).map(&:to_s).join(".")
       "#{ lang }.#{ scoped_key }"
     end
@@ -116,22 +146,18 @@ module Pierre
     def fetch_data(lang, key, options = {})
       options    = sanitize(options)
       lookup_key = build_key(lang, key, options[:scope])
-      data       = adapter.get(lookup_key)
+      data       = parse_data(adapter.get(lookup_key))
 
-      if data.nil? || data.empty?
-        unless lang == fallback_lang || !options[:fallback]
-          fetch_data(fallback_lang, key, options)
-        else
-          parse_data_and_lang(data, lang)
-        end
+      if needs_fallback?(data, lang, options)
+        fetch_data(fallback_lang, key, options)
       else
-        parse_data_and_lang(data, lang)
+        [ data, lang ]
       end
     end
 
-    def parse_data_and_lang(raw_data, lang)
+    def parse_data(raw_data)
       raw_data ||= "{}"
-      [ JSON.parse(raw_data, symbolize_names: true), lang ]
+      JSON.parse(raw_data, symbolize_names: true)
     end
 
     def parsed_uri
@@ -140,6 +166,12 @@ module Pierre
 
     def sanitize(options = {})
       OptionsSanitizer.sanitize(options)
+    end
+
+    def needs_fallback?(data, lang, options)
+      options[:fallback] == true &&
+      lang != fallback_lang      &&
+      (data[:text].nil? || data[:text].empty?)
     end
   end
 end

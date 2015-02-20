@@ -93,5 +93,19 @@ describe Pierre do
           .to yield_control
       end
     end
+
+    describe ".languages" do
+      it "delegates out to the store" do
+        expect(store).to receive(:languages)
+        Pierre.languages
+      end
+    end
+
+    describe ".remove" do
+      it "delegates out to the store" do
+        expect(store).to receive(:remove).with(:hello)
+        Pierre.remove(:hello)
+      end
+    end
   end
 end

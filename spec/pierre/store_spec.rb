@@ -27,6 +27,22 @@ module Pierre
       end
     end
 
+    describe "#languages" do
+      context "without anything stored" do
+        it "returns an empty array" do
+          expect(store.languages).to eq []
+        end
+      end
+
+      context "with a language stored" do
+        it "returnsn the languages stored" do
+          store.adapter.set(:languages, [:en, :es].to_json)
+          expect(store.languages).to eq [:en, :es]
+        end
+      end
+    end
+
+
     describe "#set" do
       let(:lang)    { :en }
       let(:key)     { :welcome_message }
@@ -42,6 +58,12 @@ module Pierre
 
         stored_data = store.adapter.get(lookup_key)
         expect(stored_data).to eq expected_data
+      end
+
+      it "adds a language to the store's languages" do
+        expect(store.languages).to be_empty
+        store.set(lang, key, text)
+        expect(store.languages).to include lang
       end
 
       it "returns a Translation instance after setting" do
@@ -120,6 +142,22 @@ module Pierre
             expect(result.text).to      eq text
             expect(result.context).to   eq context
           end
+
+          context "when the translation is an empty string" do
+            before { store.set(:fr, key, "") }
+
+            it "returns the translation for the fallback language" do
+              result = store.get(:fr, key)
+
+              expect(result).to be_kind_of Pierre::Translation
+              expect(result.lang).to      eq :en
+              expect(result.missing?).to  be false
+              expect(result.fallback?).to be true
+              expect(result.key).to       eq key
+              expect(result.text).to      eq text
+              expect(result.context).to   eq context
+            end
+          end
         end
 
         context "when fallback is disabled (set to false)" do
@@ -181,6 +219,31 @@ module Pierre
         expect(data[:shaka].keys).to eq [:en, :es]
         expect(data[:shaka].values.map(&:text)).to eq ["world", "Missing Translation"]
         expect(data[:shaka].values.map(&:missing?)).to eq [false, true]
+      end
+    end
+
+    describe "#remove" do
+      before do
+        store.set(:en, :boom, "hello")
+        store.set(:es, :boom, "hola")
+      end
+
+      it "removes translations for all languages of a specific key" do
+        store.remove(:boom)
+
+        expect(store.adapter.get("en.boom")).to  be_nil
+        expect(store.adapter.get("es.boom")).to  be_nil
+
+        expect(store.get(:en, :boom).missing?).to eq true
+        expect(store.get(:es, :boom).missing?).to eq true
+      end
+
+      it "removes the language from that store's languages if it's the last one" do
+        store.set(:en, :bye, "Cheers")
+        expect(store.languages).to eq [:en, :es]
+
+        store.remove(:boom)
+        expect(store.languages).to eq [:en]
       end
     end
   end

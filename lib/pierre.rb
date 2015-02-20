@@ -32,9 +32,17 @@ module Pierre
     store.keys(lang)
   end
 
+  def self.languages
+    store.languages
+  end
+
   def self.manage(lang, options = {})
     options[:reference] ||= :en
     store.manage(lang, options)
+  end
+
+  def self.remove(key)
+    store.remove(key)
   end
 
   def self.set(lang, key, text, options = {})
