@@ -6,6 +6,7 @@ module Pierre
     let(:config) {
       {
         db: TEST_DB,
+        languages: [:en, :es, :fr],
         namespace: TEST_NAMESPACE,
         uri: TEST_URI,
       }
@@ -28,16 +29,15 @@ module Pierre
     end
 
     describe "#languages" do
-      context "without anything stored" do
+      context "without anything set" do
         it "returns an empty array" do
-          expect(store.languages).to eq []
+          expect(Store.new.languages).to eq []
         end
       end
 
-      context "with a language stored" do
-        it "returnsn the languages stored" do
-          store.adapter.set(:languages, [:en, :es].to_json)
-          expect(store.languages).to eq [:en, :es]
+      context "when store is initialized with languages" do
+        it "returns the initialized languages" do
+          expect(store.languages).to eq [:en, :es, :fr]
         end
       end
     end
@@ -58,12 +58,6 @@ module Pierre
 
         stored_data = store.adapter.get(lookup_key)
         expect(stored_data).to eq expected_data
-      end
-
-      it "adds a language to the store's languages" do
-        expect(store.languages).to be_empty
-        store.set(lang, key, text)
-        expect(store.languages).to include lang
       end
 
       it "returns a Translation instance after setting" do
@@ -236,14 +230,6 @@ module Pierre
 
         expect(store.get(:en, :boom).missing?).to eq true
         expect(store.get(:es, :boom).missing?).to eq true
-      end
-
-      it "removes the language from that store's languages if it's the last one" do
-        store.set(:en, :bye, "Cheers")
-        expect(store.languages).to eq [:en, :es]
-
-        store.remove(:boom)
-        expect(store.languages).to eq [:en]
       end
     end
   end

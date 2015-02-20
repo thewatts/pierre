@@ -38,6 +38,7 @@ lang = :fr
 store = Pierre::Store.new({
   uri: redis_uri,        # the URI of the Redis service being used
   db:  db_index,         # the index of the database in Redis
+  languages: [:en, :es]  # the languages that Pierre knows about
   namespace: namespace,  # the namepace desired for the Redis database
   fallback_lang: lang,   # OPTIONAL: Set the fallback language if a translation is missing (defaults to :en)
 })
@@ -200,6 +201,13 @@ Pierre.set(:es, :goodbye, "Adios!")
 
 Pierre.keys(:es)
 # => [:crazy, :goodbye, :hello]
+```
+
+### Getting all the languages that Pierre knows about
+
+```ruby
+Pierre.languages
+# => [:en, :es, :fr]
 ```
 
 ### Getting a dump of all the Translations for a Language
