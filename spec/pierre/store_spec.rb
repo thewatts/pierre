@@ -221,5 +221,30 @@ module Pierre
         expect(data[:shaka].values.map(&:missing?)).to eq [false, true]
       end
     end
+
+    describe "#remove" do
+      before do
+        store.set(:en, :boom, "hello")
+        store.set(:es, :boom, "hola")
+      end
+
+      it "removes translations for all languages of a specific key" do
+        store.remove(:boom)
+
+        expect(store.adapter.get("en.boom")).to  be_nil
+        expect(store.adapter.get("es.boom")).to  be_nil
+
+        expect(store.get(:en, :boom).missing?).to eq true
+        expect(store.get(:es, :boom).missing?).to eq true
+      end
+
+      it "removes the language from that store's languages if it's the last one" do
+        store.set(:en, :bye, "Cheers")
+        expect(store.languages).to eq [:en, :es]
+
+        store.remove(:boom)
+        expect(store.languages).to eq [:en]
+      end
+    end
   end
 end

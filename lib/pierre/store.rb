@@ -71,10 +71,18 @@ module Pierre
       adapter.keys
     end
 
+    def remove(key)
+      languages.each do |lang|
+        lookup_key = build_key(lang, key)
+        adapter.del(lookup_key)
+        remove_language_from_store_if_no_translations(lang)
+      end
+    end
+
     def set(lang, key, text, options = {})
       options = sanitize(options)
 
-      add_language_to_store(lang)
+      add_language_to_store_unless_present(lang)
 
       lookup_key = build_key(lang, key, options[:scope])
       data = {
@@ -89,9 +97,17 @@ module Pierre
 
     private
 
-    def add_language_to_store(lang)
+    def add_language_to_store_unless_present(lang)
       unless lang.nil? || lang.empty? || languages.include?(lang.to_sym)
         updated_languages = languages + [lang]
+        adapter.set(:languages, updated_languages.to_json)
+      end
+    end
+
+    def remove_language_from_store_if_no_translations(lang)
+      translated_keys = adapter.keys("#{ lang }*")
+      if translated_keys.empty?
+        updated_languages = languages - [lang]
         adapter.set(:languages, updated_languages.to_json)
       end
     end
@@ -100,7 +116,7 @@ module Pierre
       Redis::Namespace.new(namespace, redis: connection)
     end
 
-    def build_key(lang, key, scope_array)
+    def build_key(lang, key, scope_array = [])
       scoped_key = scope_array.dup.push(key).map(&:to_s).join(".")
       "#{ lang }.#{ scoped_key }"
     end
