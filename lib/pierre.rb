@@ -41,6 +41,10 @@ module Pierre
     store.manage(lang, options)
   end
 
+  def self.remove(key)
+    store.remove(key)
+  end
+
   def self.set(lang, key, text, options = {})
     store.set(lang, key, text, options)
   end
