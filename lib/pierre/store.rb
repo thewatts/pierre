@@ -116,22 +116,18 @@ module Pierre
     def fetch_data(lang, key, options = {})
       options    = sanitize(options)
       lookup_key = build_key(lang, key, options[:scope])
-      data       = adapter.get(lookup_key)
+      data       = parse_data(adapter.get(lookup_key))
 
-      if data.nil? || data.empty?
-        unless lang == fallback_lang || !options[:fallback]
-          fetch_data(fallback_lang, key, options)
-        else
-          parse_data_and_lang(data, lang)
-        end
+      if needs_fallback?(data, lang, options)
+        fetch_data(fallback_lang, key, options)
       else
-        parse_data_and_lang(data, lang)
+        [ data, lang ]
       end
     end
 
-    def parse_data_and_lang(raw_data, lang)
+    def parse_data(raw_data)
       raw_data ||= "{}"
-      [ JSON.parse(raw_data, symbolize_names: true), lang ]
+      JSON.parse(raw_data, symbolize_names: true)
     end
 
     def parsed_uri
@@ -140,6 +136,12 @@ module Pierre
 
     def sanitize(options = {})
       OptionsSanitizer.sanitize(options)
+    end
+
+    def needs_fallback?(data, lang, options)
+      options[:fallback] == true &&
+      lang != fallback_lang      &&
+      (data[:text].nil? || data[:text].empty?)
     end
   end
 end

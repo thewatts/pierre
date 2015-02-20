@@ -120,6 +120,22 @@ module Pierre
             expect(result.text).to      eq text
             expect(result.context).to   eq context
           end
+
+          context "when the translation is an empty string" do
+            before { store.set(:fr, key, "") }
+
+            it "returns the translation for the fallback language" do
+              result = store.get(:fr, key)
+
+              expect(result).to be_kind_of Pierre::Translation
+              expect(result.lang).to      eq :en
+              expect(result.missing?).to  be false
+              expect(result.fallback?).to be true
+              expect(result.key).to       eq key
+              expect(result.text).to      eq text
+              expect(result.context).to   eq context
+            end
+          end
         end
 
         context "when fallback is disabled (set to false)" do
