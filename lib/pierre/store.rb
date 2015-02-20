@@ -7,7 +7,7 @@ require "pierre/store/options_sanitizer"
 
 module Pierre
   class Store
-    attr_reader :config, :db, :fallback_lang, :namespace, :uri
+    attr_reader :config, :db, :fallback_lang, :languages, :namespace, :uri
 
     def initialize(config = {})
       @config        = config
@@ -15,6 +15,7 @@ module Pierre
       @db            = config[:db]
       @namespace     = config[:namespace]
       @fallback_lang = config[:fallback_lang] || default_fallback_lang
+      @languages     = config[:languages] || []
     end
 
     def adapter
@@ -50,11 +51,6 @@ module Pierre
       end.sort
     end
 
-    def languages
-      language_data = adapter.get(:languages) || "[]"
-      JSON.parse(language_data).map(&:to_sym)
-    end
-
     def manage(managing_lang, options = {})
       reference_lang = options[:reference] || :en
       reference_keys = keys(reference_lang)
@@ -75,14 +71,11 @@ module Pierre
       languages.each do |lang|
         lookup_key = build_key(lang, key)
         adapter.del(lookup_key)
-        remove_language_from_store_if_no_translations(lang)
       end
     end
 
     def set(lang, key, text, options = {})
       options = sanitize(options)
-
-      add_language_to_store_unless_present(lang)
 
       lookup_key = build_key(lang, key, options[:scope])
       data = {
@@ -96,21 +89,6 @@ module Pierre
     end
 
     private
-
-    def add_language_to_store_unless_present(lang)
-      unless lang.nil? || lang.empty? || languages.include?(lang.to_sym)
-        updated_languages = languages + [lang]
-        adapter.set(:languages, updated_languages.to_json)
-      end
-    end
-
-    def remove_language_from_store_if_no_translations(lang)
-      translated_keys = adapter.keys("#{ lang }*")
-      if translated_keys.empty?
-        updated_languages = languages - [lang]
-        adapter.set(:languages, updated_languages.to_json)
-      end
-    end
 
     def build_adapter
       Redis::Namespace.new(namespace, redis: connection)
