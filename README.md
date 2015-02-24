@@ -255,6 +255,8 @@ Pierre.manage(:es, reference: :en) # This defaults to :en, so Pierre.manage(:es)
 #    }
 ```
 
+To include translations for all languages, pass `:all` as the first argument to `Pierre.manage` instead of specifying a specific language.
+
 ### JSON of Data
 
 In the event of needing a JSON representation of the returned data, you should be able to call `#to_json` on all of it.
