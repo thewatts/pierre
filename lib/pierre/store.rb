@@ -54,12 +54,17 @@ module Pierre
     def manage(managing_lang, options = {})
       reference_lang = options[:reference] || :en
       reference_keys = keys(reference_lang)
+      if managing_lang.to_sym == :all
+        managing_langs = languages
+      else
+        managing_langs = [reference_lang, managing_lang]
+      end
 
       reference_keys.each_with_object({}) do |key, hash|
-        hash[key] = {
-          reference_lang => get(reference_lang, key),
-          managing_lang  => get(managing_lang, key, fallback: false)
-        }
+        hash[key] = {}
+        managing_langs.each do |lang|
+          hash[key][lang] = get(lang, key, fallback: false)
+        end
       end
     end
 

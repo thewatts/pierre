@@ -174,7 +174,7 @@ module Pierre
 
     describe "#keys" do
       it "returns the sorted keys for the given language" do
-        store.set(:en, :boom,  "hello")
+        store.set(:en, :boom, "hello")
         store.set(:en, :shaka, "world")
         store.set(:en, :laka,  "!!!")
 
@@ -184,7 +184,7 @@ module Pierre
 
     describe "#dump" do
       it "returns the data (keys, translations) for the given language" do
-        store.set(:en, :boom,  "hello")
+        store.set(:en, :boom, "hello")
         store.set(:en, :shaka, "world")
         store.set(:en, :laka,  "!!!")
 
@@ -197,9 +197,8 @@ module Pierre
 
     describe "#manage" do
       it "returns the state of the given language, in comparison to the reference language" do
-        store.set(:en, :boom,  "hello")
+        store.set(:en, :boom, "hello")
         store.set(:en, :shaka, "world")
-
         store.set(:es, :boom, "hola")
 
         data = store.manage(:es, reference: :en) # :en is the default
@@ -213,6 +212,30 @@ module Pierre
         expect(data[:shaka].keys).to eq [:en, :es]
         expect(data[:shaka].values.map(&:text)).to eq ["world", "Missing Translation"]
         expect(data[:shaka].values.map(&:missing?)).to eq [false, true]
+      end
+
+      it "only includes keys that are specified in the reference language" do
+        store.set(:en, :boom, "hello")
+        store.set(:es, :boom, "hola")
+        store.set(:en, :shaka, "shaka")
+        store.set(:es, :other, "not specified in english")
+
+        data = store.manage(:es, reference: :en)
+
+        expect(data.keys).to eq [:boom, :shaka]
+      end
+
+      it "returns all languages if first argument is :all" do
+        store.set(:en, :boom, "hello")
+        store.set(:es, :boom, "hola")
+        store.set(:fr, :boom, "bonjour")
+        store.set(:en, :shaka, "shaka")
+        store.set(:fr, :frenchy, "frenchy")
+
+        data = store.manage(:all)
+
+        expect(data.keys).to eq [:boom, :shaka]
+        expect(data[:boom].keys).to eq [:en, :es, :fr]
       end
     end
 
