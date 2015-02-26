@@ -148,6 +148,13 @@ module Pierre
           expect(translation.scope).to eq [:hello, :world]
         end
       end
+
+      describe "#word_count" do
+        it "pulls the word count from the translation" do
+          translation = Translation.new(text: "hello world")
+          expect(translation.word_count).to eq 2
+        end
+      end
     end
   end
 end
