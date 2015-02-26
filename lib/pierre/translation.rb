@@ -68,6 +68,10 @@ module Pierre
       as_json(options).to_json
     end
 
+    def word_count
+      text.to_s.split(" ").count
+    end
+
     private
 
     def parse_key(raw_key)
