@@ -3,6 +3,7 @@ require "redis"
 require "redis-namespace"
 require "uri"
 require "pierre/translation"
+require "pierre/store/importer"
 require "pierre/store/options_sanitizer"
 
 module Pierre
@@ -43,6 +44,12 @@ module Pierre
         fallback: input_lang != output_lang,
         fallback_text: options[:fallback_text]
       })
+    end
+
+    def import(file = nil)
+      return if file.nil? || !file.is_a?(File)
+
+      Importer.new(file, self).import
     end
 
     def keys(lang)
