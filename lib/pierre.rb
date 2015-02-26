@@ -28,6 +28,10 @@ module Pierre
     @i18n_adapter ||= Pierre::I18nAdapter.new(store)
   end
 
+  def self.import(file = nil)
+    store.import(file)
+  end
+
   def self.keys(lang)
     store.keys(lang)
   end

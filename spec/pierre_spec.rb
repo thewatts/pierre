@@ -107,5 +107,13 @@ describe Pierre do
         Pierre.remove(:hello)
       end
     end
+
+    describe ".import" do
+      it "delegates out to the store" do
+        file = double
+        expect(store).to receive(:import).with(file)
+        Pierre.import(file)
+      end
+    end
   end
 end
