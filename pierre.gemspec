@@ -6,8 +6,8 @@ require 'pierre/version'
 Gem::Specification.new do |spec|
   spec.name          = "pierre"
   spec.version       = Pierre::VERSION
-  spec.authors       = ["Nathaniel Watts"]
-  spec.email         = ["reg@nathanielwatts.com"]
+  spec.authors       = ["Steve Hanson, Nathaniel Watts"]
+  spec.email         = ["s.hanson5@gmail.com, reg@nathanielwatts.com"]
   spec.summary       = %q{More to come}
   spec.description   = %q{More to come}
   spec.homepage      = ""
