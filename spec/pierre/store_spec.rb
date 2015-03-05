@@ -193,6 +193,17 @@ module Pierre
         expect(dump.keys).to eq [:boom, :laka, :shaka]
         expect(dump.values).to eq ["hello", "!!!", "world"]
       end
+
+      it "does not return items that are missing translations" do
+        store.set(:en, :boom, "hello")
+        store.set(:en, :shaka, "world")
+        store.set(:es, :boom, "hola")
+        store.set(:es, :shaka, "")
+
+        dump = store.dump(:es)
+        expect(dump.keys).to eq [:boom]
+        expect(dump.values).to eq ["hola"]
+      end
     end
 
     describe "#manage" do
