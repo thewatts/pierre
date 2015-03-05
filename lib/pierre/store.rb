@@ -129,7 +129,10 @@ module Pierre
 
     def dump_data_for(lang)
       keys(lang).each_with_object({}) do |key, hash|
-        hash[key] = get(lang, key).text
+        translation = get(lang, key, fallback: false)
+        unless translation.missing?
+          hash[key] = translation.text
+        end
       end
     end
 
