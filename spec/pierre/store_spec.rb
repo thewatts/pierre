@@ -271,7 +271,7 @@ module Pierre
       it "delegates to an importer instance with a file and itself" do
         file     = double(:is_a?  => true)
         importer = double(:import => true)
-        expect(Importer).to receive(:new).with(file, store).and_return(importer)
+        expect(Store::Importer).to receive(:new).with(file, store).and_return(importer)
         store.import(file)
       end
     end
