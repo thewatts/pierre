@@ -1,10 +1,10 @@
 require "spec_helper"
 
 module Pierre
-  describe Importer do
+  describe Store::Importer do
     let(:store)    { Pierre::Store.new(languages: [:en, :es]) }
     let(:csv)      { File.open("./spec/support/files/example-csv.csv") }
-    let(:importer) { Importer.new(csv, store) }
+    let(:importer) { Store::Importer.new(csv, store) }
 
     describe "#initialize" do
       it "initializes with an instance of the store" do

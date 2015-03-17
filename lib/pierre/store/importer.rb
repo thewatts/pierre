@@ -2,7 +2,7 @@ require 'csv'
 
 module Pierre
   class Store
-    class::Importer
+    class Importer
       attr_reader :file, :store
 
       def initialize(csv, store)
