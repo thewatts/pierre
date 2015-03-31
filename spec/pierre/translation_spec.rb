@@ -147,6 +147,11 @@ module Pierre
           attributes[:scope] = "hello.world"
           expect(translation.scope).to eq [:hello, :world]
         end
+
+        it "converts the scope from the given key" do
+          attributes[:key] = "views.learn_more.about_edp.display_name"
+          expect(translation.scope).to eq [:views, :learn_more, :about_edp]
+        end
       end
 
       describe "#word_count" do
