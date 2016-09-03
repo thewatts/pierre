@@ -4,7 +4,7 @@ A gem for adding Multi Language Management to your application
 ### Named after Pierre-François Bouchard
 > [Pierre-François Bouchard was an officer in the French Army engineers who is most famous for discovering the Rosetta Stone](http://en.wikipedia.org/wiki/Pierre-Fran%C3%A7ois_Bouchard)
 
-![Mr. Bouchard](http://historienet.dk/files/bonnier-his/imagecache/630x420/pictures/pierre_francois_bouchard1.jpg)
+![Mr. Bouchard](http://bonnier.imgix.net/pierre_francois_bouchard1-ya28dDfc7P4hjLxk1XAz9w.jpg)
 
 ## Installation
 
@@ -348,9 +348,9 @@ Specifically (examples included):
 }
 ```
 
-## I18n Support
+## i18n Support
 
-`[I18n](https://github.com/svenfuchs/i18n)` is a great project, and it comes baked right into `Rails`.
+[i18n](https://github.com/svenfuchs/i18n) is a great project, and it comes baked right into `Rails`.
 
 In `Rails` you can simply and effectively pull translations into your views.
 
